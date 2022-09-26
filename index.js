@@ -23,6 +23,7 @@ async function run() {
   try {
     await client.connect();
     const productCollection = client.db("Solutya").collection("Product");
+    const usersCollection = client.db("Solutya").collection("users");
 
     app.get("/product", async (req, res) => {
       const query = {};
@@ -30,7 +31,38 @@ async function run() {
       const products = await cursor.toArray();
       res.send(products);
     });
+    //get user's
+    app.get("/user", async (req, res) => {
+      const users = await usersCollection.find().toArray();
+      res.send(users);
+    });
 
+    //make editor
+    app.put("/user/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
     app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
