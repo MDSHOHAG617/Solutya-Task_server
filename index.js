@@ -25,7 +25,6 @@ async function run() {
     const productCollection = client.db("Solutya").collection("Product");
     const usersCollection = client.db("Solutya").collection("users");
     const editorCollection = client.db("Solutya").collection("users");
-    const regularCollection = client.db("Solutya").collection("users");
 
     app.get("/product", async (req, res) => {
       const query = {};
@@ -116,7 +115,7 @@ async function run() {
     app.delete("/product/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      result = await productCollection.deleteOne(query);
+      const result = await productCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
