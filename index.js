@@ -24,6 +24,8 @@ async function run() {
     await client.connect();
     const productCollection = client.db("Solutya").collection("Product");
     const usersCollection = client.db("Solutya").collection("users");
+    const editorCollection = client.db("Solutya").collection("users");
+    const regularCollection = client.db("Solutya").collection("users");
 
     app.get("/product", async (req, res) => {
       const query = {};
@@ -37,7 +39,7 @@ async function run() {
       res.send(users);
     });
 
-    //make editor
+    //make admin
     app.put("/user/admin/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
@@ -45,6 +47,17 @@ async function run() {
         $set: { role: "admin" },
       };
       const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    //make editor
+    app.put("/user/editor/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "editor" },
+      };
+      const result = await editorCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
 
